@@ -29,7 +29,7 @@ class CarLocationScheduler(
         carThree = CarLocation("car-three", now, 95)
     }
 
-    @Scheduled(fixedRate = 10000)
+//    @Scheduled(fixedRate = 10000)
     fun generateCarLocation() = run {
         val now = System.currentTimeMillis()
         carOne = carOne.copy(distance = carOne.distance + 1, timestamp = now)

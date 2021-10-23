@@ -1,7 +1,9 @@
 package com.hyecheon.kafkaproducer.config
 
 import com.hyecheon.kafkaproducer.entity.Employee
+import com.hyecheon.kafkaproducer.entity.FoodOrder
 import com.hyecheon.kafkaproducer.producer.EmployeeProducer
+import com.hyecheon.kafkaproducer.producer.FoodOrderProducer
 import com.hyecheon.kafkaproducer.producer.HelloKafkaProducer
 import com.hyecheon.kafkaproducer.producer.KafkaKeyProducer
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -19,6 +21,7 @@ class Bootstrap(
     private val helloKafkaProducer: HelloKafkaProducer,
     private val kafkaKeyProducer: KafkaKeyProducer,
     private val employeeProducer: EmployeeProducer,
+    private val foodOrderProducer: FoodOrderProducer,
 ) {
 /*    @EventListener(classes = [ApplicationStartedEvent::class])
     fun start() = run {
@@ -31,11 +34,22 @@ class Bootstrap(
         }
     }*/
 
-    @EventListener(classes = [ApplicationStartedEvent::class])
+    //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun start() = run {
         for (i in 1..5) {
             val employee = Employee("emp-${i}", "employee $i", LocalDate.now())
             employeeProducer.sendMessage(employee)
         }
+    }
+
+    @EventListener(classes = [ApplicationStartedEvent::class])
+    fun foodStart() = run {
+        val chickenOrder = FoodOrder(3, "Chicken")
+        val fishOrder = FoodOrder(10, "Fish")
+        val pizzaOrder = FoodOrder(5, "Pizza")
+
+        foodOrderProducer.send(chickenOrder)
+        foodOrderProducer.send(fishOrder)
+        foodOrderProducer.send(pizzaOrder)
     }
 }

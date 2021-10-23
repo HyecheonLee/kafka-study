@@ -13,8 +13,6 @@ Xkafka-consumer/src/main/kotlin/com/hyecheon/kafkaconsumer/consumer/HelloKafkaCo
 Vkafka-consumer/src/main/kotlin/com/hyecheon/kafkaconsumer/consumer/KafkaKeyConsumer.kt,8/f/8f97bfcc1242aeffcdf67b55d8b3cf759a413930
 †
 Vkafka-producer/src/main/kotlin/com/hyecheon/kafkaproducer/producer/KafkaKeyProducer.kt,7/a/7a53489cbe522e24fbeccd4408e268a5eae1ca27
-}
-Mkafka-producer/src/main/kotlin/com/hyecheon/kafkaproducer/config/Bootstrap.kt,8/b/8bbf44509d953b7b4b85c0c26f49ae7ef4f26164
 ‡
 Wkafka-producer/src/main/kotlin/com/hyecheon/kafkaproducer/producer/FixedRateProducer.kt,a/1/a1aee92e4297c1811dec3e47e79b8e5cf4664003
 |
