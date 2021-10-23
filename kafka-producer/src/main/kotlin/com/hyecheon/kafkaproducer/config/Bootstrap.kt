@@ -2,10 +2,8 @@ package com.hyecheon.kafkaproducer.config
 
 import com.hyecheon.kafkaproducer.entity.Employee
 import com.hyecheon.kafkaproducer.entity.FoodOrder
-import com.hyecheon.kafkaproducer.producer.EmployeeProducer
-import com.hyecheon.kafkaproducer.producer.FoodOrderProducer
-import com.hyecheon.kafkaproducer.producer.HelloKafkaProducer
-import com.hyecheon.kafkaproducer.producer.KafkaKeyProducer
+import com.hyecheon.kafkaproducer.entity.SimpleNumber
+import com.hyecheon.kafkaproducer.producer.*
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -22,6 +20,7 @@ class Bootstrap(
     private val kafkaKeyProducer: KafkaKeyProducer,
     private val employeeProducer: EmployeeProducer,
     private val foodOrderProducer: FoodOrderProducer,
+    private val simpleNumberProducer: SimpleNumberProducer,
 ) {
 /*    @EventListener(classes = [ApplicationStartedEvent::class])
     fun start() = run {
@@ -51,5 +50,13 @@ class Bootstrap(
         foodOrderProducer.send(chickenOrder)
         foodOrderProducer.send(fishOrder)
         foodOrderProducer.send(pizzaOrder)
+    }
+
+    @EventListener(classes = [ApplicationStartedEvent::class])
+    fun simpleNumber() = run {
+        for (i in 100..103) {
+            val simpleNumber = SimpleNumber(i)
+            simpleNumberProducer.send(simpleNumber)
+        }
     }
 }

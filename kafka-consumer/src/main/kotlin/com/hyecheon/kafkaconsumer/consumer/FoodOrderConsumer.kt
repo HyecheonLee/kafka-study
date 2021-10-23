@@ -20,7 +20,7 @@ class FoodOrderConsumer {
         private const val MaxAmountOrder = 7
     }
 
-    @KafkaListener(topics = ["t_food_order"],errorHandler = "myFoodOrderErrorHandler")
+//    @KafkaListener(topics = ["t_food_order"],errorHandler = "myFoodOrderErrorHandler")
     fun consume(message: String) = run {
         val foodOrder = objectMapper.readValue(message, FoodOrder::class.java)
         if (foodOrder.amount > MaxAmountOrder) {

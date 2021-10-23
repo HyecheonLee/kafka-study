@@ -2,6 +2,7 @@ package com.hyecheon.kafkaconsumer.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hyecheon.kafkaconsumer.entity.CarLocation
+import com.hyecheon.kafkaconsumer.error.handler.GlobalErrorHandler
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer
@@ -43,6 +44,16 @@ class KafkaConfig(
                     false
                 }
             }
+        }
+    }
+
+    @Bean(value = ["kafkaListenerContainerFactory"])
+    fun kafkaListenerContainerFactory(
+        configurer: ConcurrentKafkaListenerContainerFactoryConfigurer,
+    ) = run {
+        ConcurrentKafkaListenerContainerFactory<Any, Any>().apply {
+            configurer.configure(this, consumerFactory())
+            setErrorHandler(GlobalErrorHandler())
         }
     }
 }

@@ -25,6 +25,8 @@ class FoodOrderErrorHandler : ConsumerAwareListenerErrorHandler {
         log.warn("Food order error. Pretending to send to elasticsearch: {}, because: {}",
             message.payload,
             exception.message)
-
+        if (exception.cause is RuntimeException) {
+            throw exception
+        }
     }
 }
