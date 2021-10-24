@@ -4,6 +4,7 @@ import com.hyecheon.kafkaproducer.entity.Employee
 import com.hyecheon.kafkaproducer.entity.FoodOrder
 import com.hyecheon.kafkaproducer.entity.SimpleNumber
 import com.hyecheon.kafkaproducer.producer.*
+import com.hyecheon.kafkaproducer.service.ImageService
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -21,8 +22,10 @@ class Bootstrap(
     private val employeeProducer: EmployeeProducer,
     private val foodOrderProducer: FoodOrderProducer,
     private val simpleNumberProducer: SimpleNumberProducer,
+    private val imageService: ImageService,
+    private val imageProducer: ImageProducer,
 ) {
-/*    @EventListener(classes = [ApplicationStartedEvent::class])
+    //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun start() = run {
 //        helloKafkaProducer.sendHello("Timotius ${Math.random()}")
         for (i in 1..10000) {
@@ -31,17 +34,17 @@ class Bootstrap(
             kafkaKeyProducer.send(key, message)
             Thread.sleep(500)
         }
-    }*/
+    }
 
     //    @EventListener(classes = [ApplicationStartedEvent::class])
-    fun start() = run {
+    fun star2t() = run {
         for (i in 1..5) {
             val employee = Employee("emp-${i}", "employee $i", LocalDate.now())
             employeeProducer.sendMessage(employee)
         }
     }
 
-    @EventListener(classes = [ApplicationStartedEvent::class])
+    //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun foodStart() = run {
         val chickenOrder = FoodOrder(3, "Chicken")
         val fishOrder = FoodOrder(10, "Fish")
@@ -52,11 +55,21 @@ class Bootstrap(
         foodOrderProducer.send(pizzaOrder)
     }
 
-    @EventListener(classes = [ApplicationStartedEvent::class])
+    //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun simpleNumber() = run {
         for (i in 100..103) {
             val simpleNumber = SimpleNumber(i)
             simpleNumberProducer.send(simpleNumber)
         }
+    }
+
+    @EventListener(classes = [ApplicationStartedEvent::class])
+    fun imageProducer() = run {
+        var image1 = imageService.generateImage("jpg")
+        var image2 = imageService.generateImage("svg")
+        var image3 = imageService.generateImage("png")
+        imageProducer.send(image1)
+        imageProducer.send(image2)
+        imageProducer.send(image3)
     }
 }
