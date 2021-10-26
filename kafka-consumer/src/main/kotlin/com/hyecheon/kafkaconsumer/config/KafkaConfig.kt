@@ -4,15 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hyecheon.kafkaconsumer.entity.CarLocation
 import com.hyecheon.kafkaconsumer.error.handler.GlobalErrorHandler
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.common.TopicPartition
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer
+import org.springframework.kafka.listener.SeekToCurrentErrorHandler
 import org.springframework.retry.backoff.FixedBackOffPolicy
 import org.springframework.retry.policy.SimpleRetryPolicy
 import org.springframework.retry.support.RetryTemplate
+import org.springframework.util.backoff.FixedBackOff
 
 /**
  * User: hyecheon lee
@@ -67,13 +72,26 @@ class KafkaConfig(
     }
 
     @Bean(value = ["imageRetryContainerFactory"])
-    fun imageRetryContainerFactory(
-        configurer: ConcurrentKafkaListenerContainerFactoryConfigurer,
-    ) = run {
+    fun imageRetryContainerFactory(configurer: ConcurrentKafkaListenerContainerFactoryConfigurer) = run {
         ConcurrentKafkaListenerContainerFactory<Any, Any>().apply {
             configurer.configure(this, consumerFactory())
             setErrorHandler(GlobalErrorHandler())
             setRetryTemplate(createRetryTemplate())
+        }
+    }
+
+    @Bean(value = ["invoiceDltContainerFactory"])
+    fun invoiceDltContainerFactory(
+        configurer: ConcurrentKafkaListenerContainerFactoryConfigurer,
+        kafkaTemplate: KafkaTemplate<Any, Any>,
+    ) = run {
+        ConcurrentKafkaListenerContainerFactory<Any, Any>().apply {
+            configurer.configure(this, consumerFactory())
+            val errorHandler = DeadLetterPublishingRecoverer(kafkaTemplate) { record, ex ->
+                TopicPartition("t_invoice_dlt", record.partition())
+            }
+                .let { SeekToCurrentErrorHandler(it, FixedBackOff(1000, 1)) }
+            setErrorHandler(errorHandler)
         }
     }
 }

@@ -5,6 +5,7 @@ import com.hyecheon.kafkaproducer.entity.FoodOrder
 import com.hyecheon.kafkaproducer.entity.SimpleNumber
 import com.hyecheon.kafkaproducer.producer.*
 import com.hyecheon.kafkaproducer.service.ImageService
+import com.hyecheon.kafkaproducer.service.InvoiceService
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -24,6 +25,8 @@ class Bootstrap(
     private val simpleNumberProducer: SimpleNumberProducer,
     private val imageService: ImageService,
     private val imageProducer: ImageProducer,
+    private val invoiceService: InvoiceService,
+    private val invoiceProducer: InvoiceProducer,
 ) {
     //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun start() = run {
@@ -63,7 +66,7 @@ class Bootstrap(
         }
     }
 
-    @EventListener(classes = [ApplicationStartedEvent::class])
+    //    @EventListener(classes = [ApplicationStartedEvent::class])
     fun imageProducer() = run {
         var image1 = imageService.generateImage("jpg")
         var image2 = imageService.generateImage("svg")
@@ -71,5 +74,13 @@ class Bootstrap(
         imageProducer.send(image1)
         imageProducer.send(image2)
         imageProducer.send(image3)
+    }
+
+    @EventListener(classes = [ApplicationStartedEvent::class])
+    fun invoiceProducer() = run {
+        for (i in 1..10) {
+            val invoice = invoiceService.generateInvoice()
+            invoiceProducer.send(if (i >= 5) invoice.copy(amount = -1.0) else invoice)
+        }
     }
 }
